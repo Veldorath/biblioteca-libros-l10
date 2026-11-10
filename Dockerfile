@@ -1,7 +1,10 @@
-# biblioteca-libros: Node plano, sin dependencias que instalar. Sirve datos/catalogo.json en el 3001.
-FROM node:24-alpine
+# biblioteca-libros: Node plano. Sirve el catalogo y lo publica si tiene KAFKA_BROKERS.
+FROM node:24-slim
 WORKDIR /app
-COPY libros.mjs ./
+ENV NODE_ENV=production
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev && npm cache clean --force
+COPY libros.mjs catalogo-kafka.mjs ./
 COPY datos/ ./datos/
 USER node
 EXPOSE 3001
